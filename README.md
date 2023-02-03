@@ -1,3 +1,41 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/sHyben/lunch-buddy-backend?style=flat-square)](https://goreportcard.com/report/github.com/sHyben/lunch-buddy-backend)
+[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
+
+## 1. Run with Docker
+
+1. **Build**
+```make build```
+```shell script
+docker build . -t lunch-buddy-backend
+```
+
+2. **Run**
+
+```shell script
+docker run -p 3000:3000 lunch-buddy-backend
+```
+
+3. **Test**
+
+```shell script
+go test -v ./test/...
+```
+
+_______
+
+## 2. Generate Docs
+
+```shell script
+# Get swag
+go get -u github.com/swaggo/swag/cmd/swag
+
+# Generate docs
+swag init --dir cmd/api --parseDependency --output docs
+```
+
+Run and go to **http://localhost:3000/docs/index.html**
+
+
 # Standard Go Project Layout
 
 Translations:
@@ -188,19 +226,19 @@ Don't confuse the project level `/src` directory with the `/src` directory Go us
 
 * [Go Report Card](https://goreportcard.com/) - It will scan your code with `gofmt`, `go vet`, `gocyclo`, `golint`, `ineffassign`, `license` and `misspell`. Replace `github.com/golang-standards/project-layout` with your project reference.
 
-    [![Go Report Card](https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square)](https://goreportcard.com/report/github.com/golang-standards/project-layout)
+    [![Go Report Card](https://goreportcard.com/badge/github.com/sHyben/lunch-buddy-backend?style=flat-square)](https://goreportcard.com/report/github.com/sHyben/lunch-buddy-backend)
 
 * ~~[GoDoc](http://godoc.org) - It will provide online version of your GoDoc generated documentation. Change the link to point to your project.~~
 
-    [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/golang-standards/project-layout)
+    [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/sHyben/lunch-buddy-backend)
 
 * [Pkg.go.dev](https://pkg.go.dev) - Pkg.go.dev is a new destination for Go discovery & docs. You can create a badge using the [badge generation tool](https://pkg.go.dev/badge).
 
-    [![PkgGoDev](https://pkg.go.dev/badge/github.com/golang-standards/project-layout)](https://pkg.go.dev/github.com/golang-standards/project-layout)
+    [![PkgGoDev](https://pkg.go.dev/badge/github.com/sHyben/lunch-buddy-backend)](https://pkg.go.dev/github.com/golang-standards/project-layout)
 
 * Release - It will show the latest release number for your project. Change the github link to point to your project.
 
-    [![Release](https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square)](https://github.com/golang-standards/project-layout/releases/latest)
+    [![Release](https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square)](https://github.com/sHyben/lunch-buddy-backend/releases/latest)
 
 ## Notes
 

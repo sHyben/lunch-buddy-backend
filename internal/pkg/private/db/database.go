@@ -5,7 +5,6 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/config"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models/tasks"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models/users"
@@ -34,12 +33,7 @@ func SetupDB() {
 	host := configuration.Database.Host
 	port := configuration.Database.Port
 
-	if driver == "sqlite" { // SQLITE
-		db, err = gorm.Open("sqlite3", "./"+database+".db")
-		if err != nil {
-			fmt.Println("db err: ", err)
-		}
-	} else if driver == "postgres" { // POSTGRES
+	if driver == "postgres" { // POSTGRES
 		db, err = gorm.Open("postgres", "host="+host+" port="+port+" user="+username+" dbname="+database+"  sslmode=disable password="+password)
 		if err != nil {
 			fmt.Println("db err: ", err)

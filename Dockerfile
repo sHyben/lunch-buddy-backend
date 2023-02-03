@@ -16,7 +16,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o ./out/app ./cmd/api/main.go
+RUN go build -o ./out/app ./cmd/lunch-buddy-backend/main.go
 
 # Start fresh from a smaller image
 FROM alpine:3.12
