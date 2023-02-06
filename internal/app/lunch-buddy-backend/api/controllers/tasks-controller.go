@@ -124,8 +124,8 @@ func UpdateTask(c *gin.Context) {
 func DeleteTask(c *gin.Context) {
 	s := persistence.GetTaskRepository()
 	id := c.Params.ByName("id")
-	var taskInput models.Task
-	_ = c.BindJSON(&taskInput)
+	/*	var taskInput models.Task
+		_ = c.BindJSON(&taskInput)*/
 	if task, err := s.Get(id); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("task not found"))
 		log.Println(err)

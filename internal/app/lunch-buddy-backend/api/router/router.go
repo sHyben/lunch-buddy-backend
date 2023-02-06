@@ -50,6 +50,7 @@ func Setup() *gin.Engine {
 	// ================== User Routes
 	app.GET("/api/users", controllers.GetUsers)
 	app.GET("/api/users/:id", controllers.GetUserById)
+	app.GET("/api/users/username/:username", controllers.GetUserByUsername)
 	app.POST("/api/users", controllers.CreateUser)
 	app.PUT("/api/users/:id", controllers.UpdateUser)
 	app.DELETE("/api/users/:id", controllers.DeleteUser)

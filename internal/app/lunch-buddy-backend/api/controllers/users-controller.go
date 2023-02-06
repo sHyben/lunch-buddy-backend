@@ -132,8 +132,8 @@ func UpdateUser(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	s := persistence.GetUserRepository()
 	id := c.Params.ByName("id")
-	var userInput UserInput
-	_ = c.BindJSON(&userInput)
+	/*	var userInput UserInput
+		_ = c.BindJSON(&userInput)*/
 	if user, err := s.Get(id); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("user not found"))
 		log.Println(err)
@@ -144,5 +144,24 @@ func DeleteUser(c *gin.Context) {
 		} else {
 			c.JSON(http.StatusNoContent, "")
 		}
+	}
+}
+
+// GetUserByUsername godoc
+// @Summary Retrieves user based on given username
+// @Description get User by username
+// @Produce json
+// @Param username path string true "Username"
+// @Success 200 {object} users.User
+// @Router /api/users/username/{username} [get]
+// @Security Authorization Token
+func GetUserByUsername(c *gin.Context) {
+	s := persistence.GetUserRepository()
+	username := c.Param("username")
+	if user, err := s.GetByUsername(username); err != nil {
+		http_err.NewError(c, http.StatusNotFound, errors.New("user not found"))
+		log.Println(err)
+	} else {
+		c.JSON(http.StatusOK, user)
 	}
 }

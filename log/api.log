@@ -1,0 +1,6 @@
+::1 - - [06/Feb/2023:12:10:19 +0100] "GET /api/users/username/hyben.simon@gmail.com HTTP/1.1 200 46.6394ms " " PostmanRuntime/7.30.0" " "
+::1 - - [06/Feb/2023:12:11:01 +0100] "GET /api/user/username/hyben.simon@gmail.com HTTP/1.1 404 80.1µs " " Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" " "
+::1 - - [06/Feb/2023:12:13:04 +0100] "GET /api/users/username/hyben.simon@gmail.com HTTP/1.1 200 45.4637ms " " PostmanRuntime/7.30.0" " "
+::1 - - [06/Feb/2023:12:16:42 +0100] "GET /api/users/username/hyben.simon@gmail.com HTTP/1.1 200 144.6223ms " " Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" " "
+::1 - - [06/Feb/2023:12:24:11 +0100] "GET /api/user/e247bae6-55c3-48a8-80ac-ee8fc7979e72 HTTP/1.1 404 121.1µs " " Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" " "
+::1 - - [06/Feb/2023:12:24:21 +0100] "GET /api/users/e247bae6-55c3-48a8-80ac-ee8fc7979e72 HTTP/1.1 200 42.5651ms " " Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" " "
