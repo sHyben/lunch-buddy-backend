@@ -1,5 +1,11 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/sHyben/lunch-buddy-backend?style=flat-square)](https://goreportcard.com/report/github.com/sHyben/lunch-buddy-backend)
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
+## Run
+2. **Run**
+
+```shell script
+go run ./cmd/lunch-buddy-backend/main.go
+```
 
 ## 1. Run with Docker
 

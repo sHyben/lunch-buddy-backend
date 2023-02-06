@@ -8,11 +8,15 @@ import (
 
 var Config *Configuration
 
+// Configuration is a struct that contains all the configuration data
+// for the application
 type Configuration struct {
 	Server   ServerConfiguration
 	Database DatabaseConfiguration
 }
 
+// DatabaseConfiguration is a struct that contains all the configuration data
+// for the database
 type DatabaseConfiguration struct {
 	Driver       string
 	Dbname       string
@@ -25,13 +29,18 @@ type DatabaseConfiguration struct {
 	MaxIdleConns int
 }
 
+// ServerConfiguration is a struct that contains all the configuration data
+// for the server
 type ServerConfiguration struct {
 	Port   string
 	Secret string
 	Mode   string
 }
 
-// Setup SetupDB initialize configuration
+// Setup helps you to set up the configuration
+// It reads the configuration file and unmarshals it into the configuration struct
+// It sets the configuration struct as a global variable
+// It panics if something went wrong
 func Setup(configPath string) {
 	var configuration *Configuration
 
@@ -50,7 +59,8 @@ func Setup(configPath string) {
 	Config = configuration
 }
 
-// GetConfig helps you to get configuration data
+// GetConfig returns the configuration struct
+// It is used to get the configuration from other packages
 func GetConfig() *Configuration {
 	return Config
 }

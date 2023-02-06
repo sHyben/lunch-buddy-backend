@@ -11,6 +11,9 @@ import (
 	"os"
 )
 
+// Setup sets up the router
+// It returns a gin.Engine
+// It is called by main.go
 func Setup() *gin.Engine {
 	app := gin.New()
 
@@ -36,6 +39,7 @@ func Setup() *gin.Engine {
 	app.Use(gin.Recovery())
 	app.Use(middlewares.CORS())
 	app.NoRoute(middlewares.NoRouteHandler())
+	//app.Use(middlewares.AuthRequired())
 
 	// Routes
 	// ================== Login Routes

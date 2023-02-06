@@ -1,26 +1,27 @@
 package persistence
 
 import (
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	database "github.com/sHyben/lunch-buddy-backend/internal/pkg/private/db"
 )
 
-// Create
+// Create a new record
 func Create(value interface{}) error {
 	return database.GetDB().Create(value).Error
 }
 
-// Save
+// Save a record
 func Save(value interface{}) error {
 	return database.GetDB().Save(value).Error
 }
 
-// Updates
+// Updates a record
 func Updates(where interface{}, value interface{}) error {
 	return database.GetDB().Model(where).Updates(value).Error
 }
 
-// Delete
+// DeleteByModel delete a record
 func DeleteByModel(model interface{}) (count int64, err error) {
 	db := database.GetDB().Delete(model)
 	err = db.Error
@@ -31,7 +32,7 @@ func DeleteByModel(model interface{}) (count int64, err error) {
 	return
 }
 
-// Delete
+// DeleteByWhere delete a record
 func DeleteByWhere(model, where interface{}) (count int64, err error) {
 	db := database.GetDB().Where(where).Delete(model)
 	err = db.Error
@@ -42,8 +43,8 @@ func DeleteByWhere(model, where interface{}) (count int64, err error) {
 	return
 }
 
-// Delete
-func DeleteByID(model interface{}, id uint64) (count int64, err error) {
+// DeleteByID delete a record
+func DeleteByID(model interface{}, id uuid.UUID) (count int64, err error) {
 	db := database.GetDB().Where("id=?", id).Delete(model)
 	err = db.Error
 	if err != nil {
@@ -53,8 +54,8 @@ func DeleteByID(model interface{}, id uint64) (count int64, err error) {
 	return
 }
 
-// Delete
-func DeleteByIDS(model interface{}, ids []uint64) (count int64, err error) {
+// DeleteByIDS delete a record
+func DeleteByIDS(model interface{}, ids []uuid.UUID) (count int64, err error) {
 	db := database.GetDB().Where("id in (?)", ids).Delete(model)
 	err = db.Error
 	if err != nil {
@@ -64,8 +65,8 @@ func DeleteByIDS(model interface{}, ids []uint64) (count int64, err error) {
 	return
 }
 
-// First
-func FirstByID(out interface{}, id string) (notFound bool, err error) {
+// FirstByID returns the first record found by id
+func FirstByID(out interface{}, id uuid.UUID) (notFound bool, err error) {
 	err = database.GetDB().First(out, id).Error
 	if err != nil {
 		notFound = gorm.IsRecordNotFoundError(err)
@@ -73,7 +74,7 @@ func FirstByID(out interface{}, id string) (notFound bool, err error) {
 	return
 }
 
-// First
+// First returns the first record found by where
 func First(where interface{}, out interface{}, associations []string) (notFound bool, err error) {
 	db := database.GetDB()
 	for _, a := range associations {
@@ -86,7 +87,7 @@ func First(where interface{}, out interface{}, associations []string) (notFound 
 	return
 }
 
-// Find
+// Find returns all records found by where
 func Find(where interface{}, out interface{}, associations []string, orders ...string) error {
 	db := database.GetDB()
 	for _, a := range associations {
@@ -101,7 +102,7 @@ func Find(where interface{}, out interface{}, associations []string, orders ...s
 	return db.Find(out).Error
 }
 
-// Scan
+// Scan returns the first record found by where
 func Scan(model, where interface{}, out interface{}) (notFound bool, err error) {
 	err = database.GetDB().Model(model).Where(where).Scan(out).Error
 	if err != nil {
@@ -110,7 +111,7 @@ func Scan(model, where interface{}, out interface{}) (notFound bool, err error) 
 	return
 }
 
-// ScanList
+// ScanList returns all records found by where
 func ScanList(model, where interface{}, out interface{}, orders ...string) error {
 	db := database.GetDB().Model(model).Where(where)
 	if len(orders) > 0 {

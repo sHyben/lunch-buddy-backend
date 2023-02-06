@@ -46,7 +46,7 @@ func SetupDB() {
 	}
 
 	// Change this to true if you want to see SQL queries
-	db.LogMode(false)
+	db.LogMode(true)
 	db.DB().SetMaxIdleConns(configuration.Database.MaxIdleConns)
 	db.DB().SetMaxOpenConns(configuration.Database.MaxOpenConns)
 	db.DB().SetConnMaxLifetime(time.Duration(configuration.Database.MaxLifetime) * time.Second)

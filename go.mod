@@ -3,8 +3,9 @@ module github.com/sHyben/lunch-buddy-backend
 go 1.19
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.8.1
+	github.com/golang-jwt/jwt/v4 v4.4.3
+	github.com/google/uuid v1.3.0
 	github.com/jinzhu/gorm v1.9.15
 	github.com/spf13/viper v1.7.1
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a

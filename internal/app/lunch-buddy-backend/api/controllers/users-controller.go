@@ -60,6 +60,15 @@ func GetUsers(c *gin.Context) {
 	}
 }
 
+// CreateUser godoc
+// @Summary Creates a new user
+// @Description Create User
+// @Accept json
+// @Produce json
+// @Param user body UserInput true "User"
+// @Success 201 {object} users.User
+// @Router /api/users [post]
+// @Security Authorization Token
 func CreateUser(c *gin.Context) {
 	s := persistence.GetUserRepository()
 	var userInput UserInput
@@ -79,6 +88,16 @@ func CreateUser(c *gin.Context) {
 	}
 }
 
+// UpdateUser godoc
+// @Summary Updates an existing user
+// @Description Update User
+// @Accept json
+// @Produce json
+// @Param id path integer true "User ID"
+// @Param user body UserInput true "User"
+// @Success 200 {object} users.User
+// @Router /api/users/{id} [put]
+// @Security Authorization Token
 func UpdateUser(c *gin.Context) {
 	s := persistence.GetUserRepository()
 	id := c.Params.ByName("id")
@@ -102,6 +121,14 @@ func UpdateUser(c *gin.Context) {
 	}
 }
 
+// DeleteUser godoc
+// @Summary Deletes a user
+// @Description Delete User
+// @Produce json
+// @Param id path integer true "User ID"
+// @Success 204
+// @Router /api/users/{id} [delete]
+// @Security Authorization Token
 func DeleteUser(c *gin.Context) {
 	s := persistence.GetUserRepository()
 	id := c.Params.ByName("id")

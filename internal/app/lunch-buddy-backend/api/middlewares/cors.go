@@ -2,6 +2,8 @@ package middlewares
 
 import "github.com/gin-gonic/gin"
 
+// CORS is a middleware that sets the CORS headers
+// It is called by router.Setup
 func CORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")

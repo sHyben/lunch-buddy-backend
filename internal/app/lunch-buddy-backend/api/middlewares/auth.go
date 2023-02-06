@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+// AuthRequired is a middleware that checks if the request has a valid token
+// It is called by router.Setup
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authorizationHeader := c.GetHeader("authorization")

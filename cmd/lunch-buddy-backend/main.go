@@ -18,7 +18,6 @@ import "github.com/sHyben/lunch-buddy-backend/internal/app/lunch-buddy-backend/a
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
-
 func main() {
 	api.Run("")
 }

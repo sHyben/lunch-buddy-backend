@@ -1,6 +1,6 @@
 database:
   driver: "postgres"
-  dbname: "lunch-buddy"
+  dbname: "lunch-buddy-dev"
   username: "postgres"
   password: "123456"
   host: "localhost"

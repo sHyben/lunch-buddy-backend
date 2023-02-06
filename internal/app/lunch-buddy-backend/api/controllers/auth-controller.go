@@ -10,11 +10,25 @@ import (
 	"net/http"
 )
 
+// LoginInput godoc
+// @type LoginInput
+// @property username string
+// @property password string
+// @required
+// @in body
+// @name loginInput
+// @description Login Input
+// @example {"username": "admin", "password": "admin"}
 type LoginInput struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Login user
+// @Produce json
+// @Param loginInput body LoginInput true "Login Input"
 func Login(c *gin.Context) {
 	var loginInput LoginInput
 	_ = c.BindJSON(&loginInput)
