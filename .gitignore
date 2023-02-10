@@ -21,3 +21,5 @@
 vendor/
 
 app.env
+
+data/config.yml

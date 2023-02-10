@@ -59,6 +59,10 @@ func migration() {
 	DB.AutoMigrate(&users.User{})
 	DB.AutoMigrate(&users.UserRole{})
 	DB.AutoMigrate(&tasks.Task{})
+	DB.AutoMigrate(&users.Hobby{})
+	DB.AutoMigrate(&users.Language{})
+	DB.AutoMigrate(&users.Lunch{})
+	DB.AutoMigrate(&users.Area{})
 }
 
 func GetDB() *gorm.DB {

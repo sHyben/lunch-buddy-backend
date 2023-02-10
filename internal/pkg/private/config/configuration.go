@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -32,9 +33,17 @@ type DatabaseConfiguration struct {
 // ServerConfiguration is a struct that contains all the configuration data
 // for the server
 type ServerConfiguration struct {
-	Port   string
-	Secret string
-	Mode   string
+	Port                   string
+	Secret                 string
+	Mode                   string
+	AccessTokenPrivateKey  string
+	AccessTokenPublicKey   string
+	RefreshTokenPrivateKey string
+	RefreshTokenPublicKey  string
+	AccessTokenExpiresIn   time.Duration
+	RefreshTokenExpiresIn  time.Duration
+	AccessTokenMaxAge      int
+	RefreshTokenMaxAge     int
 }
 
 // Setup helps you to set up the configuration

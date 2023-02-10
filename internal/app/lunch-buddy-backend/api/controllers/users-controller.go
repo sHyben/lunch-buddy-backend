@@ -16,7 +16,12 @@ type UserInput struct {
 	Lastname  string `json:"lastname"`
 	Firstname string `json:"firstname"`
 	Password  string `json:"password" binding:"required"`
-	Role      string `json:"role"`
+}
+
+type UserResponse struct {
+	Username  string `json:"username"`
+	Lastname  string `json:"lastname"`
+	Firstname string `json:"firstname"`
 }
 
 // GetUserById godoc
@@ -78,7 +83,7 @@ func CreateUser(c *gin.Context) {
 		Firstname: userInput.Firstname,
 		Lastname:  userInput.Lastname,
 		Hash:      crypto.HashAndSalt([]byte(userInput.Password)),
-		Role:      models.UserRole{RoleName: userInput.Role},
+		//Role:      models.UserRole{RoleName: userInput.Role},
 	}
 	if err := s.Add(&user); err != nil {
 		http_err.NewError(c, http.StatusBadRequest, err)
@@ -111,7 +116,7 @@ func UpdateUser(c *gin.Context) {
 		user.Lastname = userInput.Lastname
 		user.Firstname = userInput.Firstname
 		user.Hash = crypto.HashAndSalt([]byte(userInput.Password))
-		user.Role = models.UserRole{RoleName: userInput.Role}
+		//user.Role = models.UserRole{RoleName: userInput.Role}
 		if err := s.Update(user); err != nil {
 			http_err.NewError(c, http.StatusNotFound, err)
 			log.Println(err)
@@ -162,6 +167,8 @@ func GetUserByUsername(c *gin.Context) {
 		http_err.NewError(c, http.StatusNotFound, errors.New("user not found"))
 		log.Println(err)
 	} else {
-		c.JSON(http.StatusOK, user)
+		//c.JSON(http.StatusOK, user)
+		userResponse := UserResponse{Username: user.Username, Firstname: user.Firstname, Lastname: user.Lastname}
+		c.JSON(http.StatusOK, userResponse)
 	}
 }

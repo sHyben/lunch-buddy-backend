@@ -44,7 +44,7 @@ func Setup() *gin.Engine {
 	// Routes
 	// ================== Login Routes
 	app.POST("/api/login", controllers.Login)
-	app.POST("/api/login/add", controllers.CreateUser)
+	app.POST("/api/register", controllers.CreateUser)
 	// ================== Docs Routes
 	app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// ================== User Routes
@@ -54,6 +54,31 @@ func Setup() *gin.Engine {
 	app.POST("/api/users", controllers.CreateUser)
 	app.PUT("/api/users/:id", controllers.UpdateUser)
 	app.DELETE("/api/users/:id", controllers.DeleteUser)
+	// ================== Hobby Routes
+	app.GET("/api/hobbies", controllers.GetHobbies)
+	app.GET("/api/hobbies/:id", controllers.GetHobbyById)
+	app.POST("/api/hobbies", controllers.CreateHobby)
+	app.PUT("/api/hobbies/:id", controllers.UpdateHobby)
+	app.DELETE("/api/hobbies/:id", controllers.DeleteHobby)
+	// ================== Language Routes
+	app.GET("/api/languages", controllers.GetLanguages)
+	app.GET("/api/languages/:id", controllers.GetLanguageById)
+	app.POST("/api/languages", controllers.CreateLanguage)
+	app.PUT("/api/languages/:id", controllers.UpdateLanguage)
+	app.DELETE("/api/languages/:id", controllers.DeleteLanguage)
+	// ================== Lunch Routes
+	app.GET("/api/lunches", controllers.GetLunches)
+	app.GET("/api/lunches/:id", controllers.GetLunchById)
+	app.POST("/api/lunches", controllers.CreateLunch)
+	app.PUT("/api/lunches/:id", controllers.UpdateLunch)
+	app.DELETE("/api/lunches/:id", controllers.DeleteLunch)
+	// ================== Area Routes
+	app.GET("/api/areas", controllers.GetAreas)
+	app.GET("/api/areas/:id", controllers.GetAreaById)
+	app.POST("/api/areas", controllers.CreateArea)
+	app.PUT("/api/areas/:id", controllers.UpdateArea)
+	app.DELETE("/api/areas/:id", controllers.DeleteArea)
+
 	// ================== Tasks Routes
 	app.GET("/api/tasks/:id", controllers.GetTaskById)
 	app.GET("/api/tasks", controllers.GetTasks)

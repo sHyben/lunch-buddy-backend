@@ -34,7 +34,7 @@ func (r *UserRepository) Get(id string) (*models.User, error) {
 		return nil, err
 	}
 	where.ID = stringToUuid
-	_, err = First(&where, &user, []string{"Role"})
+	_, err = First(&where, &user, []string{"Hobbies", "Languages", "Lunch", "Buddies", "Blacklist", "Likes", "Areas"})
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (r *UserRepository) GetByUsername(username string) (*models.User, error) {
 	var user models.User
 	where := models.User{}
 	where.Username = username
-	_, err := First(&where, &user, []string{"Role"})
+	_, err := First(&where, &user, []string{"Hobbies", "Languages", "Lunch", "Buddies", "Blacklist", "Likes", "Areas"})
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (r *UserRepository) GetByUsername(username string) (*models.User, error) {
 // The role is eager loaded
 func (r *UserRepository) All() (*[]models.User, error) {
 	var users []models.User
-	err := Find(&models.User{}, &users, []string{"Role"}, "id asc")
+	err := Find(&models.User{}, &users, []string{"Hobbies", "Languages", "Lunch", "Buddies", "Blacklist", "Likes", "Areas"}, "id asc")
 	return &users, err
 }
 
@@ -75,7 +75,7 @@ func (r *UserRepository) All() (*[]models.User, error) {
 // and pass it to the query function
 func (r *UserRepository) Query(q *models.User) (*[]models.User, error) {
 	var users []models.User
-	err := Find(&q, &users, []string{"Role"}, "id asc")
+	err := Find(&q, &users, []string{"Hobbies", "Languages", "Lunch", "Buddies", "Blacklist", "Likes", "Areas"}, "id asc")
 	return &users, err
 }
 
@@ -94,10 +94,10 @@ func (r *UserRepository) Add(user *models.User) error {
 func (r *UserRepository) Update(user *models.User) error {
 	var userRole models.UserRole
 	_, err := First(models.UserRole{UserID: user.ID}, &userRole, []string{})
-	userRole.RoleName = user.Role.RoleName
+	//userRole.RoleName = user.Role.RoleName
 	err = Save(&userRole)
-	err = db.GetDB().Omit("Role").Save(&user).Error
-	user.Role = userRole
+	err = db.GetDB().Omit("Hobbies", "Languages", "Lunch", "Buddies", "Blacklist", "Likes", "Areas").Save(&user).Error
+	//user.Role = userRole
 	return err
 }
 

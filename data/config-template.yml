@@ -1,0 +1,25 @@
+
+database:
+  driver: "postgres"
+  dbname: ""
+  username: ""
+  password: ""
+  host: ""
+  port: ""
+  max_lifetime: 7200
+  max_open_conns: 150
+  max_idle_conns: 50
+
+server:
+  port: ""
+  secret: ""
+  #release | debug
+  mode: ""
+  access_token_private_key: ""
+  access_token_public_key: ""
+  access_token_expires_in: "15m"
+  access_token_max_age: "15"
+  refresh_token_private_key: ""
+  refresh_token_public_key: ""
+  refresh_token_expires_in: "60m"
+  refresh_token_max_age: "60"
