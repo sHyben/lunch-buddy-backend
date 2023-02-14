@@ -79,15 +79,21 @@ func UpdateLanguage(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var languageInput models.Language
 	_ = c.BindJSON(&languageInput)
-	if _, err := s.Get(id); err != nil {
+	if language, err := s.Get(id); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("language not found"))
 		log.Println(err)
 	} else {
-		if err := s.Update(&languageInput); err != nil {
+		if languageInput.Name != "" {
+			language.Name = languageInput.Name
+		} else {
+			http_err.NewError(c, http.StatusBadRequest, errors.New("name is required"))
+		}
+
+		if err := s.Update(language); err != nil {
 			http_err.NewError(c, http.StatusNotFound, err)
 			log.Println(err)
 		} else {
-			c.JSON(http.StatusOK, languageInput)
+			c.JSON(http.StatusOK, language)
 		}
 	}
 }
@@ -112,5 +118,18 @@ func DeleteLanguage(c *gin.Context) {
 		} else {
 			c.JSON(http.StatusNoContent, "")
 		}
+	}
+}
+
+func GetLanguageByName(c *gin.Context) {
+	s := persistence.GetLanguageRepository()
+	name := c.Param("name")
+	if language, err := s.GetByName(name); err != nil {
+		http_err.NewError(c, http.StatusNotFound, errors.New("language not found"))
+		log.Println(err)
+	} else {
+		//c.JSON(http.StatusOK, user)
+		languageResponse := UserResponse{Username: language.Name}
+		c.JSON(http.StatusOK, languageResponse)
 	}
 }

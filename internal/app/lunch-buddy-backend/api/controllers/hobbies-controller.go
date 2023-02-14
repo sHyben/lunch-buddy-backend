@@ -83,15 +83,21 @@ func UpdateHobby(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var hobbyInput models.Hobby
 	_ = c.BindJSON(&hobbyInput)
-	if _, err := s.Get(id); err != nil {
+	if hobby, err := s.Get(id); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("hobby not found"))
 		log.Println(err)
 	} else {
-		if err := s.Update(&hobbyInput); err != nil {
+		if hobbyInput.Name != "" {
+			hobby.Name = hobbyInput.Name
+		} else {
+			http_err.NewError(c, http.StatusBadRequest, errors.New("name is required"))
+		}
+		hobby.Name = hobbyInput.Name
+		if err := s.Update(hobby); err != nil {
 			http_err.NewError(c, http.StatusNotFound, err)
 			log.Println(err)
 		} else {
-			c.JSON(http.StatusOK, hobbyInput)
+			c.JSON(http.StatusOK, hobby)
 		}
 	}
 }

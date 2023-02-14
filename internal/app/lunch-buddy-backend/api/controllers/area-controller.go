@@ -83,10 +83,15 @@ func UpdateArea(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var areaInput models.Area
 	_ = c.BindJSON(&areaInput)
-	if _, err := s.Get(id); err != nil {
+	if area, err := s.Get(id); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("area not found"))
 		log.Println(err)
 	} else {
+		if areaInput.Name != "" {
+			area.Name = areaInput.Name
+		} else {
+			http_err.NewError(c, http.StatusBadRequest, errors.New("name is required"))
+		}
 		if err := s.Update(&areaInput); err != nil {
 			http_err.NewError(c, http.StatusNotFound, err)
 			log.Println(err)

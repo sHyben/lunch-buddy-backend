@@ -24,6 +24,12 @@ type UserResponse struct {
 	Firstname string `json:"firstname"`
 }
 
+type UserInformation struct {
+	AreaName      string   `json:"areaName"`
+	HobbyNames    []string `json:"hobbyNames"`
+	LanguageNames []string `json:"languageNames"`
+}
+
 // GetUserById godoc
 // @Summary Retrieves user based on given ID
 // @Description get User by ID
@@ -170,5 +176,40 @@ func GetUserByUsername(c *gin.Context) {
 		//c.JSON(http.StatusOK, user)
 		userResponse := UserResponse{Username: user.Username, Firstname: user.Firstname, Lastname: user.Lastname}
 		c.JSON(http.StatusOK, userResponse)
+	}
+}
+
+func AddUserInformation(c *gin.Context) {
+	u := persistence.GetUserRepository()
+	a := persistence.GetAreaRepository()
+	id := c.Param("id")
+	if user, err := u.Get(id); err != nil {
+		http_err.NewError(c, http.StatusNotFound, errors.New("user not found"))
+		log.Println(err)
+	} else {
+		var userInformation UserInformation
+		_ = c.BindJSON(&userInformation)
+		if area, err := a.GetByName(userInformation.AreaName); err != nil {
+			http_err.NewError(c, http.StatusNotFound, errors.New("area not found"))
+			log.Println(err)
+		} else {
+			//user.Areas = append(user.Areas, *area)
+			//err := u.Update(user)
+			if err := u.AddInformation(user, area); err != nil {
+				http_err.NewError(c, http.StatusNotFound, err)
+				log.Println(err)
+			} else {
+				c.JSON(http.StatusOK, &user)
+
+			}
+			//u.AddInformation(user)
+			/*			if err != nil {
+							c.JSON(http.StatusOK, user)
+						} else {
+							http_err.NewError(c, http.StatusNotFound, errors.New("something went wrong"))
+							log.Println(err)
+						}*/
+		}
+
 	}
 }

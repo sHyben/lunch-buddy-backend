@@ -78,15 +78,21 @@ func UpdateLunch(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var lunchInput models.Lunch
 	_ = c.BindJSON(&lunchInput)
-	if _, err := s.Get(id); err != nil {
+	if lunch, err := s.Get(id); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("lunch not found"))
 		log.Println(err)
 	} else {
-		if err := s.Update(&lunchInput); err != nil {
+		if lunchInput.Location != "" {
+			lunch.Location = lunchInput.Location
+		}
+		if !lunchInput.Time.IsZero() {
+			lunch.Time = lunchInput.Time
+		}
+		if err := s.Update(lunch); err != nil {
 			http_err.NewError(c, http.StatusNotFound, err)
 			log.Println(err)
 		} else {
-			c.JSON(http.StatusOK, lunchInput)
+			c.JSON(http.StatusOK, lunch)
 		}
 	}
 }

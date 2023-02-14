@@ -109,3 +109,8 @@ func (r *UserRepository) Delete(user *models.User) error {
 	err = db.GetDB().Unscoped().Delete(&user).Error
 	return err
 }
+
+func (r *UserRepository) AddInformation(user *models.User, area *models.Area) error {
+	err := db.GetDB().Model(&user).Association("Areas").Append(area).Error
+	return err
+}
