@@ -55,6 +55,9 @@ func Setup() *gin.Engine {
 	app.PUT("/api/users/:id", controllers.UpdateUser)
 	app.DELETE("/api/users/:id", controllers.DeleteUser)
 	app.POST("/api/users/:id/information", controllers.AddUserInformation)
+
+	app.GET("/api/users/:id/languages", controllers.GetUserLanguages)
+
 	// ================== Hobby Routes
 	app.GET("/api/hobbies", controllers.GetHobbies)
 	app.GET("/api/hobbies/:id", controllers.GetHobbyById)

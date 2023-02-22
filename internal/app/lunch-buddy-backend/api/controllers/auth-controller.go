@@ -30,6 +30,7 @@ type LoginOutput struct {
 	Username  string    `json:"username"`
 	Lastname  string    `json:"lastname"`
 	Firstname string    `json:"firstname"`
+	IsSetup   bool      `json:"isSetup"`
 }
 
 // Login godoc
@@ -50,7 +51,8 @@ func Login(c *gin.Context) {
 			return
 		}
 		token, _ := crypto.CreateToken(user.Username)
-		loginOutput := LoginOutput{Token: token, ID: user.ID, Username: user.Username, Lastname: user.Lastname, Firstname: user.Firstname}
+		loginOutput := LoginOutput{Token: token, ID: user.ID, Username: user.Username, Lastname: user.Lastname,
+			Firstname: user.Firstname, IsSetup: user.IsSetup}
 		c.JSON(http.StatusOK, loginOutput)
 	}
 }

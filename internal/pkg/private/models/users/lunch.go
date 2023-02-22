@@ -10,8 +10,10 @@ import (
 type Lunch struct {
 	models.Model
 	UserID   uuid.UUID
-	Location string    `gorm:"column:location;unique_index:location;not null;" json:"location"`
-	Time     time.Time `gorm:"column:time;unique_index:time;not null;" json:"time"`
+	Location string    `gorm:"column:location;not null;" json:"location"`
+	Time     time.Time `gorm:"column:time;" json:"time"` //not null;
+	Type     string    `gorm:"column:type;not null;" json:"type"`
+	Food     string    `gorm:"column:food;not null;" json:"food"`
 }
 
 // BeforeCreate is called before creating a user

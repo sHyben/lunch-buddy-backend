@@ -110,7 +110,52 @@ func (r *UserRepository) Delete(user *models.User) error {
 	return err
 }
 
-func (r *UserRepository) AddInformation(user *models.User, area *models.Area) error {
-	err := db.GetDB().Model(&user).Association("Areas").Append(area).Error
+func (r *UserRepository) ChangeUserArea(user *models.User, area models.Area) error {
+	err := db.GetDB().Model(&user).Association("Areas").Replace(area).Error
+	return err
+}
+
+func (r *UserRepository) ChangeUserHobbies(user *models.User, hobbies []models.Hobby) error {
+	err := db.GetDB().Model(&user).Association("Hobbies").Replace(hobbies).Error
+	return err
+}
+
+func (r *UserRepository) ChangeUserLanguages(user *models.User, languages []models.Language) error {
+	err := db.GetDB().Model(&user).Association("Languages").Replace(languages).Error
+	return err
+}
+
+func (r *UserRepository) ChangeUserLunch(user *models.User, lunch models.Lunch) error {
+	err := db.GetDB().Model(&user).Association("Lunch").Replace(lunch).Error
+	return err
+}
+
+func (r *UserRepository) AddUserBuddies(user *models.User, buddies []models.User) error {
+	err := db.GetDB().Model(&user).Association("Buddies").Append(buddies).Error
+	return err
+}
+
+func (r *UserRepository) RemoveUserBuddies(user *models.User, buddies []models.User) error {
+	err := db.GetDB().Model(&user).Association("Buddies").Delete(buddies).Error
+	return err
+}
+
+func (r *UserRepository) AddUserBlacklist(user *models.User, blacklist []models.User) error {
+	err := db.GetDB().Model(&user).Association("Blacklist").Append(blacklist).Error
+	return err
+}
+
+func (r *UserRepository) RemoveUserBlacklist(user *models.User, blacklist []models.User) error {
+	err := db.GetDB().Model(&user).Association("Blacklist").Delete(blacklist).Error
+	return err
+}
+
+func (r *UserRepository) AddUserLikes(user *models.User, likes []models.User) error {
+	err := db.GetDB().Model(&user).Association("Likes").Append(likes).Error
+	return err
+}
+
+func (r *UserRepository) RemoveUserLikes(user *models.User, likes []models.User) error {
+	err := db.GetDB().Model(&user).Association("Likes").Delete(likes).Error
 	return err
 }

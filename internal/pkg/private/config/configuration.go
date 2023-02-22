@@ -1,10 +1,9 @@
 package config
 
 import (
+	"github.com/spf13/viper"
 	"log"
 	"time"
-
-	"github.com/spf13/viper"
 )
 
 var Config *Configuration
@@ -28,6 +27,7 @@ type DatabaseConfiguration struct {
 	MaxLifetime  int
 	MaxOpenConns int
 	MaxIdleConns int
+	TimeZone     string
 }
 
 // ServerConfiguration is a struct that contains all the configuration data

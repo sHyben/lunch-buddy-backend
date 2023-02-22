@@ -32,9 +32,11 @@ func SetupDB() {
 	password := configuration.Database.Password
 	host := configuration.Database.Host
 	port := configuration.Database.Port
+	timezone := configuration.Database.TimeZone
+	fmt.Println("timezone: ", timezone)
 
 	if driver == "postgres" { // POSTGRES
-		db, err = gorm.Open("postgres", "host="+host+" port="+port+" user="+username+" dbname="+database+"  sslmode=disable password="+password)
+		db, err = gorm.Open("postgres", "host="+host+" port="+port+" user="+username+" dbname="+database+"  sslmode=disable password="+password+" TimeZone="+timezone)
 		if err != nil {
 			fmt.Println("db err: ", err)
 		}

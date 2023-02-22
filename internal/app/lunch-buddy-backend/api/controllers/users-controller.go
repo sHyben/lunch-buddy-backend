@@ -9,6 +9,7 @@ import (
 	"github.com/sHyben/lunch-buddy-backend/pkg/lunch-buddy-backend/http-err"
 	"log"
 	"net/http"
+	"time"
 )
 
 type UserInput struct {
@@ -19,15 +20,32 @@ type UserInput struct {
 }
 
 type UserResponse struct {
-	Username  string `json:"username"`
-	Lastname  string `json:"lastname"`
-	Firstname string `json:"firstname"`
+	Username      string   `json:"username"`
+	Firstname     string   `json:"firstName"`
+	Lastname      string   `json:"lastName"`
+	Bio           string   `json:"bio"`
+	IsSetup       bool     `json:"isSetup"`
+	Hobbies       []string `json:"hobbies"`
+	Languages     []string `json:"languages"`
+	Areas         []string `json:"areas"`
+	LunchTime     string   `json:"lunchTime"`
+	LunchType     string   `json:"lunchType"`
+	LunchFood     string   `json:"lunchFood"`
+	LunchLocation string   `json:"lunchLocation"`
+	Buddies       []string `json:"buddies"`
+	Blacklist     []string `json:"blacklist"`
+	Likes         []string `json:"likes"`
 }
 
 type UserInformation struct {
-	AreaName      string   `json:"areaName"`
+	AreaNames     []string `json:"areaName"`
 	HobbyNames    []string `json:"hobbyNames"`
 	LanguageNames []string `json:"languageNames"`
+	LunchLocation string   `json:"lunchLocation"`
+	LunchTime     string   `json:"lunchTime"`
+	LunchType     string   `json:"lunchType"`
+	LunchFood     string   `json:"lunchFood"`
+	Bio           string   `json:"bio"`
 }
 
 // GetUserById godoc
@@ -181,7 +199,7 @@ func GetUserByUsername(c *gin.Context) {
 
 func AddUserInformation(c *gin.Context) {
 	u := persistence.GetUserRepository()
-	a := persistence.GetAreaRepository()
+
 	id := c.Param("id")
 	if user, err := u.Get(id); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("user not found"))
@@ -189,27 +207,141 @@ func AddUserInformation(c *gin.Context) {
 	} else {
 		var userInformation UserInformation
 		_ = c.BindJSON(&userInformation)
-		if area, err := a.GetByName(userInformation.AreaName); err != nil {
-			http_err.NewError(c, http.StatusNotFound, errors.New("area not found"))
+
+		if userInformation.Bio != "" {
+			user.Bio = userInformation.Bio
+			if err := u.Update(user); err != nil {
+				http_err.NewError(c, http.StatusNotFound, err)
+				log.Println(err)
+			}
+		}
+		AddUserAreas(c, userInformation, user)
+		AddUserLunch(c, userInformation, user)
+		AddUserHobbies(c, userInformation, user)
+		AddUserLanguages(c, userInformation, user)
+		c.JSON(http.StatusOK, user)
+	}
+}
+
+func AddUserAreas(c *gin.Context, userInformation UserInformation, user *models.User) {
+	u := persistence.GetUserRepository()
+	a := persistence.GetAreaRepository()
+
+	if userInformation.AreaNames != nil && len(userInformation.AreaNames) > 0 {
+		for _, areaName := range userInformation.AreaNames {
+			if area, err := a.GetByName(areaName); err != nil {
+				newArea := models.Area{Name: areaName}
+				if err := a.Add(&newArea); err != nil {
+					http_err.NewError(c, http.StatusNotFound, err)
+					log.Println(err)
+				} else {
+					if err := u.ChangeUserArea(user, newArea); err != nil {
+						http_err.NewError(c, http.StatusNotFound, err)
+						log.Println(err)
+					}
+				}
+			} else {
+				if err := u.ChangeUserArea(user, *area); err != nil {
+					http_err.NewError(c, http.StatusNotFound, err)
+					log.Println(err)
+				}
+			}
+		}
+	}
+}
+
+func AddUserLunch(c *gin.Context, userInformation UserInformation, user *models.User) {
+	//u := persistence.GetUserRepository()
+	l := persistence.GetLunchRepository()
+
+	if userInformation.LunchLocation != "" && userInformation.LunchTime != "" && userInformation.LunchType != "" && userInformation.LunchFood != "" {
+		if lunchTime, err := time.Parse("2006-01-01 15:04:05+01", "1970-01-01 "+userInformation.LunchTime+"+01"); err != nil {
+			http_err.NewError(c, http.StatusBadRequest, err)
 			log.Println(err)
 		} else {
-			//user.Areas = append(user.Areas, *area)
-			//err := u.Update(user)
-			if err := u.AddInformation(user, area); err != nil {
+			lunch := models.Lunch{Location: userInformation.LunchLocation, Time: lunchTime, Type: userInformation.LunchType, Food: userInformation.LunchFood, UserID: user.ID}
+			if err := l.Add(&lunch); err != nil {
 				http_err.NewError(c, http.StatusNotFound, err)
 				log.Println(err)
 			} else {
-				c.JSON(http.StatusOK, &user)
-
+				/*				user.Lunch = lunch
+								if err := u.Update(user); err != nil {
+									http_err.NewError(c, http.StatusNotFound, err)
+									log.Println(err)
+								}*/
 			}
-			//u.AddInformation(user)
-			/*			if err != nil {
-							c.JSON(http.StatusOK, user)
-						} else {
-							http_err.NewError(c, http.StatusNotFound, errors.New("something went wrong"))
-							log.Println(err)
-						}*/
+		}
+	}
+}
+
+func AddUserHobbies(c *gin.Context, userInformation UserInformation, user *models.User) {
+	u := persistence.GetUserRepository()
+	h := persistence.GetHobbyRepository()
+
+	if userInformation.HobbyNames != nil && len(userInformation.HobbyNames) > 0 {
+		log.Println(userInformation.HobbyNames)
+		var hobbies []models.Hobby
+		for _, hobbyName := range userInformation.HobbyNames {
+			if hobby, err := h.GetByName(hobbyName); err != nil {
+				hobby = &models.Hobby{Name: hobbyName}
+				if err := h.Add(hobby); err != nil {
+					http_err.NewError(c, http.StatusNotFound, err)
+					log.Println(err)
+				} else {
+					hobbies = append(hobbies, *hobby)
+				}
+			} else {
+				hobbies = append(hobbies, *hobby)
+			}
 		}
 
+		if err := u.ChangeUserHobbies(user, hobbies); err != nil {
+			http_err.NewError(c, http.StatusNotFound, err)
+			log.Println(err)
+		}
+	}
+}
+
+func AddUserLanguages(c *gin.Context, userInformation UserInformation, user *models.User) {
+	u := persistence.GetUserRepository()
+	l := persistence.GetLanguageRepository()
+
+	if userInformation.LanguageNames != nil && len(userInformation.LanguageNames) > 0 {
+		var languages []models.Language
+		for _, languageName := range userInformation.LanguageNames {
+			if language, err := l.GetByName(languageName); err != nil {
+				language = &models.Language{Name: languageName}
+				if err := l.Add(language); err != nil {
+					http_err.NewError(c, http.StatusNotFound, err)
+					log.Println(err)
+				} else {
+					languages = append(languages, *language)
+				}
+			} else {
+				languages = append(languages, *language)
+			}
+		}
+
+		if err := u.ChangeUserLanguages(user, languages); err != nil {
+			http_err.NewError(c, http.StatusNotFound, err)
+			log.Println(err)
+		}
+	}
+}
+
+func GetUserLanguages(c *gin.Context) {
+	u := persistence.GetUserRepository()
+
+	id := c.Param("id")
+	if user, err := u.Get(id); err != nil {
+		http_err.NewError(c, http.StatusNotFound, errors.New("user not found"))
+		log.Println(err)
+	} else {
+		languageNames := make([]string, len(user.Languages))
+		for i, language := range user.Languages {
+			languageNames[i] = language.Name
+		}
+
+		c.JSON(http.StatusOK, languageNames)
 	}
 }
