@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models/users"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -23,7 +24,7 @@ type Task struct {
 // It returns an error if something went wrong
 // It is called by gorm
 // It is not intended to be called by the user
-func (m *Task) BeforeCreate() error {
+func (m *Task) BeforeCreate(db *gorm.DB) error {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
 	return nil
@@ -34,7 +35,7 @@ func (m *Task) BeforeCreate() error {
 // It returns an error if something went wrong
 // It is called by gorm
 // It is not intended to be called by the user
-func (m *Task) BeforeUpdate() error {
+func (m *Task) BeforeUpdate(db *gorm.DB) error {
 	m.UpdatedAt = time.Now()
 	return nil
 }

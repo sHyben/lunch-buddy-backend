@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	models "github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models/users"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/persistence"
@@ -21,14 +22,15 @@ type UserInput struct {
 
 type UserResponse struct {
 	Username      string   `json:"username"`
-	Firstname     string   `json:"firstName"`
-	Lastname      string   `json:"lastName"`
+	FirstName     string   `json:"firstName"`
+	LastName      string   `json:"lastName"`
 	Bio           string   `json:"bio"`
 	IsSetup       bool     `json:"isSetup"`
 	Hobbies       []string `json:"hobbies"`
 	Languages     []string `json:"languages"`
 	Areas         []string `json:"areas"`
-	LunchTime     string   `json:"lunchTime"`
+	LunchStart    string   `json:"lunchStart"`
+	LunchEnd      string   `json:"lunchEnd"`
 	LunchType     string   `json:"lunchType"`
 	LunchFood     string   `json:"lunchFood"`
 	LunchLocation string   `json:"lunchLocation"`
@@ -192,7 +194,7 @@ func GetUserByUsername(c *gin.Context) {
 		log.Println(err)
 	} else {
 		//c.JSON(http.StatusOK, user)
-		userResponse := UserResponse{Username: user.Username, Firstname: user.Firstname, Lastname: user.Lastname}
+		userResponse := UserResponse{Username: user.Username, FirstName: user.Firstname, LastName: user.Lastname}
 		c.JSON(http.StatusOK, userResponse)
 	}
 }
@@ -255,21 +257,32 @@ func AddUserLunch(c *gin.Context, userInformation UserInformation, user *models.
 	l := persistence.GetLunchRepository()
 
 	if userInformation.LunchLocation != "" && userInformation.LunchTime != "" && userInformation.LunchType != "" && userInformation.LunchFood != "" {
-		if lunchTime, err := time.Parse("2006-01-01 15:04:05+01", "1970-01-01 "+userInformation.LunchTime+"+01"); err != nil {
+		loc, _ := time.LoadLocation("Europe/Bratislava")
+		currentTime := time.Now()
+		fmt.Println(currentTime.Format("2006-01-02"))
+		//if lunchTime, err := time.Parse("2006-01-01 15:04:05 +01:00", "1970-01-01 "+userInformation.LunchTime+" +01:00"); err != nil {
+		if lunchTime, err := time.ParseInLocation("2006-01-02 15:04:05 (MST)", currentTime.Format("2006-01-02")+" "+userInformation.LunchTime+" (CET)", loc); err != nil {
 			http_err.NewError(c, http.StatusBadRequest, err)
 			log.Println(err)
 		} else {
-			lunch := models.Lunch{Location: userInformation.LunchLocation, Time: lunchTime, Type: userInformation.LunchType, Food: userInformation.LunchFood, UserID: user.ID}
-			if err := l.Add(&lunch); err != nil {
-				http_err.NewError(c, http.StatusNotFound, err)
-				log.Println(err)
+			fmt.Println("Lunch time parsed: ", lunchTime)
+			if existingLunch, err := l.Get(user.Lunch.ID.String()); err != nil {
+				lunch := models.Lunch{Location: userInformation.LunchLocation, Time: lunchTime, Type: userInformation.LunchType, Food: userInformation.LunchFood, UserID: user.ID}
+				if err := l.Add(&lunch); err != nil {
+					http_err.NewError(c, http.StatusNotFound, err)
+					log.Println(err)
+				}
 			} else {
-				/*				user.Lunch = lunch
-								if err := u.Update(user); err != nil {
-									http_err.NewError(c, http.StatusNotFound, err)
-									log.Println(err)
-								}*/
+				existingLunch.Location = userInformation.LunchLocation
+				existingLunch.Time = lunchTime
+				existingLunch.Type = userInformation.LunchType
+				existingLunch.Food = userInformation.LunchFood
+				if err := l.Update(existingLunch); err != nil {
+					http_err.NewError(c, http.StatusNotFound, err)
+					log.Println(err)
+				}
 			}
+
 		}
 	}
 }
@@ -329,19 +342,56 @@ func AddUserLanguages(c *gin.Context, userInformation UserInformation, user *mod
 	}
 }
 
-func GetUserLanguages(c *gin.Context) {
+func GetUserCard(c *gin.Context) {
 	u := persistence.GetUserRepository()
 
-	id := c.Param("id")
-	if user, err := u.Get(id); err != nil {
+	name := c.Param("name")
+	if user, err := u.GetByUsername(name); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("user not found"))
 		log.Println(err)
 	} else {
+		hobbiesNames := make([]string, len(user.Hobbies))
+		for i, hobby := range user.Hobbies {
+			hobbiesNames[i] = hobby.Name
+		}
 		languageNames := make([]string, len(user.Languages))
 		for i, language := range user.Languages {
 			languageNames[i] = language.Name
 		}
+		areasNames := make([]string, len(user.Areas))
+		for i, area := range user.Areas {
+			areasNames[i] = area.Name
+		}
+		buddiesNames := make([]string, len(user.Buddies))
+		for i, buddy := range user.Buddies {
+			buddiesNames[i] = buddy.Username
+		}
+		blackListNames := make([]string, len(user.Blacklist))
+		for i, blackList := range user.Blacklist {
+			blackListNames[i] = blackList.Username
+		}
+		likesNames := make([]string, len(user.Likes))
+		for i, like := range user.Likes {
+			likesNames[i] = like.Username
+		}
 
-		c.JSON(http.StatusOK, languageNames)
+		c.JSON(http.StatusOK, UserResponse{
+			Username:      user.Username,
+			FirstName:     user.Firstname,
+			LastName:      user.Lastname,
+			Bio:           user.Bio,
+			IsSetup:       user.IsSetup,
+			Hobbies:       hobbiesNames,
+			Languages:     languageNames,
+			Areas:         areasNames,
+			Buddies:       buddiesNames,
+			Blacklist:     blackListNames,
+			Likes:         likesNames,
+			LunchLocation: user.Lunch.Location,
+			LunchStart:    user.Lunch.Time.Format("15:04"),
+			LunchEnd:      user.Lunch.Time.Add(time.Hour / 2).Format("15:04"),
+			LunchType:     user.Lunch.Type,
+			LunchFood:     user.Lunch.Food,
+		})
 	}
 }

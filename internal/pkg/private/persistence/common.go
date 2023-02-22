@@ -1,9 +1,10 @@
 package persistence
 
 import (
+	"errors"
 	"github.com/google/uuid"
-	"github.com/jinzhu/gorm"
 	database "github.com/sHyben/lunch-buddy-backend/internal/pkg/private/db"
+	"gorm.io/gorm"
 )
 
 // Create a new record
@@ -69,7 +70,8 @@ func DeleteByIDS(model interface{}, ids []uuid.UUID) (count int64, err error) {
 func FirstByID(out interface{}, id uuid.UUID) (notFound bool, err error) {
 	err = database.GetDB().First(out, id).Error
 	if err != nil {
-		notFound = gorm.IsRecordNotFoundError(err)
+		//notFound = gorm.IsRecordNotFoundError(err)
+		notFound = errors.Is(err, gorm.ErrRecordNotFound)
 	}
 	return
 }
@@ -82,7 +84,8 @@ func First(where interface{}, out interface{}, associations []string) (notFound 
 	}
 	err = db.Where(where).First(out).Error
 	if err != nil {
-		notFound = gorm.IsRecordNotFoundError(err)
+		//notFound = gorm.IsRecordNotFoundError(err)
+		notFound = errors.Is(err, gorm.ErrRecordNotFound)
 	}
 	return
 }
@@ -106,7 +109,9 @@ func Find(where interface{}, out interface{}, associations []string, orders ...s
 func Scan(model, where interface{}, out interface{}) (notFound bool, err error) {
 	err = database.GetDB().Model(model).Where(where).Scan(out).Error
 	if err != nil {
-		notFound = gorm.IsRecordNotFoundError(err)
+		//notFound = gorm.IsRecordNotFoundError(err)
+		notFound = errors.Is(err, gorm.ErrRecordNotFound)
+
 	}
 	return
 }

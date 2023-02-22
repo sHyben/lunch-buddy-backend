@@ -3,6 +3,7 @@ package users
 import (
 	"github.com/google/uuid"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -21,7 +22,7 @@ type UserRole struct {
 // It returns an error if something went wrong
 // It is called by gorm
 // It is not intended to be called by the user
-func (m *UserRole) BeforeCreate() error {
+func (m *UserRole) BeforeCreate(db *gorm.DB) error {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
 	return nil
@@ -32,7 +33,7 @@ func (m *UserRole) BeforeCreate() error {
 // It returns an error if something went wrong
 // It is called by gorm
 // It is not intended to be called by the user
-func (m *UserRole) BeforeUpdate() error {
+func (m *UserRole) BeforeUpdate(db *gorm.DB) error {
 	m.UpdatedAt = time.Now()
 	return nil
 }

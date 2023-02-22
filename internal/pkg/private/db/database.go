@@ -2,12 +2,14 @@ package db
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/config"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models/tasks"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models/users"
+	"gorm.io/driver/mysql"
+	_ "gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	_ "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -36,35 +38,64 @@ func SetupDB() {
 	fmt.Println("timezone: ", timezone)
 
 	if driver == "postgres" { // POSTGRES
-		db, err = gorm.Open("postgres", "host="+host+" port="+port+" user="+username+" dbname="+database+"  sslmode=disable password="+password+" TimeZone="+timezone)
+		dsn := "host=" + host + " port=" + port + " user=" + username + " dbname=" + database + "  sslmode=disable password=" + password + " TimeZone=" + timezone
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err != nil {
 			fmt.Println("db err: ", err)
 		}
 	} else if driver == "mysql" { // MYSQL
-		db, err = gorm.Open("mysql", username+":"+password+"@tcp("+host+":"+port+")/"+database+"?charset=utf8&parseTime=True&loc=Local")
+		dsn := username + ":" + password + "@tcp(" + host + ":" + port + ")/" + database + "?charset=utf8&parseTime=True&loc=Local"
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
 			fmt.Println("db err: ", err)
 		}
 	}
 
 	// Change this to true if you want to see SQL queries
-	db.LogMode(true)
-	db.DB().SetMaxIdleConns(configuration.Database.MaxIdleConns)
-	db.DB().SetMaxOpenConns(configuration.Database.MaxOpenConns)
-	db.DB().SetConnMaxLifetime(time.Duration(configuration.Database.MaxLifetime) * time.Second)
+	//db.LogMode(true)
+	dbConfig, _ := db.DB()
+	dbConfig.SetMaxIdleConns(configuration.Database.MaxIdleConns)
+	dbConfig.SetMaxOpenConns(configuration.Database.MaxOpenConns)
+	dbConfig.SetConnMaxLifetime(time.Duration(configuration.Database.MaxLifetime) * time.Second)
+
+	/*	db.DB().SetMaxIdleConns(configuration.Database.MaxIdleConns)
+		db.DB().SetMaxOpenConns(configuration.Database.MaxOpenConns)
+		db.DB().SetConnMaxLifetime(time.Duration(configuration.Database.MaxLifetime) * time.Second)*/
 	DB = db
 	migration()
 }
 
 // Auto migrate project models
 func migration() {
-	DB.AutoMigrate(&users.User{})
-	DB.AutoMigrate(&users.UserRole{})
-	DB.AutoMigrate(&tasks.Task{})
-	DB.AutoMigrate(&users.Hobby{})
-	DB.AutoMigrate(&users.Language{})
-	DB.AutoMigrate(&users.Lunch{})
-	DB.AutoMigrate(&users.Area{})
+	err := DB.AutoMigrate(&users.User{})
+	if err != nil {
+		return
+	}
+	err = DB.AutoMigrate(&users.UserRole{})
+	if err != nil {
+
+		return
+	}
+	err = DB.AutoMigrate(&tasks.Task{})
+	if err != nil {
+		return
+	}
+	err = DB.AutoMigrate(&users.Hobby{})
+	if err != nil {
+		return
+	}
+	err = DB.AutoMigrate(&users.Language{})
+	if err != nil {
+		return
+	}
+	err = DB.AutoMigrate(&users.Lunch{})
+	if err != nil {
+		return
+	}
+	err = DB.AutoMigrate(&users.Area{})
+	if err != nil {
+		return
+	}
 }
 
 func GetDB() *gorm.DB {

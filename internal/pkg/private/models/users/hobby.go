@@ -2,6 +2,7 @@ package users
 
 import (
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -17,7 +18,7 @@ type Hobby struct {
 // It returns an error if something went wrong
 // It is called by gorm
 // It is not intended to be called by the user
-func (m *Hobby) BeforeCreate() error {
+func (m *Hobby) BeforeCreate(db *gorm.DB) error {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
 	return nil
@@ -28,7 +29,7 @@ func (m *Hobby) BeforeCreate() error {
 // It returns an error if something went wrong
 // It is called by gorm
 // It is not intended to be called by the user
-func (m *Hobby) BeforeUpdate() error {
+func (m *Hobby) BeforeUpdate(db *gorm.DB) error {
 	m.UpdatedAt = time.Now()
 	return nil
 }
