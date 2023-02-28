@@ -237,13 +237,13 @@ func AddUserAreas(c *gin.Context, userInformation UserInformation, user *models.
 					http_err.NewError(c, http.StatusNotFound, err)
 					log.Println(err)
 				} else {
-					if err := u.ChangeUserArea(user, newArea); err != nil {
+					if err := u.ChangeUserArea(user, &newArea); err != nil {
 						http_err.NewError(c, http.StatusNotFound, err)
 						log.Println(err)
 					}
 				}
 			} else {
-				if err := u.ChangeUserArea(user, *area); err != nil {
+				if err := u.ChangeUserArea(user, area); err != nil {
 					http_err.NewError(c, http.StatusNotFound, err)
 					log.Println(err)
 				}
@@ -350,48 +350,70 @@ func GetUserCard(c *gin.Context) {
 		http_err.NewError(c, http.StatusNotFound, errors.New("user not found"))
 		log.Println(err)
 	} else {
-		hobbiesNames := make([]string, len(user.Hobbies))
-		for i, hobby := range user.Hobbies {
-			hobbiesNames[i] = hobby.Name
-		}
-		languageNames := make([]string, len(user.Languages))
-		for i, language := range user.Languages {
-			languageNames[i] = language.Name
-		}
-		areasNames := make([]string, len(user.Areas))
-		for i, area := range user.Areas {
-			areasNames[i] = area.Name
-		}
-		buddiesNames := make([]string, len(user.Buddies))
-		for i, buddy := range user.Buddies {
-			buddiesNames[i] = buddy.Username
-		}
-		blackListNames := make([]string, len(user.Blacklist))
-		for i, blackList := range user.Blacklist {
-			blackListNames[i] = blackList.Username
-		}
-		likesNames := make([]string, len(user.Likes))
-		for i, like := range user.Likes {
-			likesNames[i] = like.Username
-		}
+		userResponse := CreateUserCard(user)
+		c.JSON(http.StatusOK, userResponse)
+	}
+}
 
-		c.JSON(http.StatusOK, UserResponse{
-			Username:      user.Username,
-			FirstName:     user.Firstname,
-			LastName:      user.Lastname,
-			Bio:           user.Bio,
-			IsSetup:       user.IsSetup,
-			Hobbies:       hobbiesNames,
-			Languages:     languageNames,
-			Areas:         areasNames,
-			Buddies:       buddiesNames,
-			Blacklist:     blackListNames,
-			Likes:         likesNames,
-			LunchLocation: user.Lunch.Location,
-			LunchStart:    user.Lunch.Time.Format("15:04"),
-			LunchEnd:      user.Lunch.Time.Add(time.Hour / 2).Format("15:04"),
-			LunchType:     user.Lunch.Type,
-			LunchFood:     user.Lunch.Food,
-		})
+func CreateUserCard(user *models.User) UserResponse {
+	hobbiesNames := make([]string, len(user.Hobbies))
+	for i, hobby := range user.Hobbies {
+		hobbiesNames[i] = hobby.Name
+	}
+	languageNames := make([]string, len(user.Languages))
+	for i, language := range user.Languages {
+		languageNames[i] = language.Name
+	}
+	areasNames := make([]string, len(user.Areas))
+	for i, area := range user.Areas {
+		areasNames[i] = area.Name
+	}
+	buddiesNames := make([]string, len(user.Buddies))
+	for i, buddy := range user.Buddies {
+		buddiesNames[i] = buddy.Username
+	}
+	blackListNames := make([]string, len(user.Blacklist))
+	for i, blackList := range user.Blacklist {
+		blackListNames[i] = blackList.Username
+	}
+	likesNames := make([]string, len(user.Likes))
+	for i, like := range user.Likes {
+		likesNames[i] = like.Username
+	}
+
+	userResponse := UserResponse{
+		Username:      user.Username,
+		FirstName:     user.Firstname,
+		LastName:      user.Lastname,
+		Bio:           user.Bio,
+		IsSetup:       user.IsSetup,
+		Hobbies:       hobbiesNames,
+		Languages:     languageNames,
+		Areas:         areasNames,
+		Buddies:       buddiesNames,
+		Blacklist:     blackListNames,
+		Likes:         likesNames,
+		LunchLocation: user.Lunch.Location,
+		LunchStart:    user.Lunch.Time.Format("15:04"),
+		LunchEnd:      user.Lunch.Time.Add(time.Hour / 2).Format("15:04"),
+		LunchType:     user.Lunch.Type,
+		LunchFood:     user.Lunch.Food,
+	}
+
+	return userResponse
+}
+
+func GetUsersForDashboard(c *gin.Context) {
+	u := persistence.GetUserRepository()
+
+	if users, err := u.GetRandomFiveUsersWithAssociation(); err != nil {
+		http_err.NewError(c, http.StatusNotFound, errors.New("users not found"))
+		log.Println(err)
+	} else {
+		userResponses := make([]UserResponse, len(users))
+		for i, user := range users {
+			userResponses[i] = CreateUserCard(&user)
+		}
+		c.JSON(http.StatusOK, userResponses)
 	}
 }

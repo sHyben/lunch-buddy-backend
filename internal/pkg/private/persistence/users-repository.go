@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sHyben/lunch-buddy-backend/internal/pkg/private/db"
 	models "github.com/sHyben/lunch-buddy-backend/internal/pkg/private/models/users"
+	"gorm.io/gorm"
 )
 
 // UserRepository is a repository for users
@@ -92,11 +93,11 @@ func (r *UserRepository) Add(user *models.User) error {
 // The role is updated in the database
 // The user is updated in the database
 func (r *UserRepository) Update(user *models.User) error {
-	var userRole models.UserRole
-	_, err := First(models.UserRole{UserID: user.ID}, &userRole, []string{})
-	//userRole.RoleName = user.Role.RoleName
-	err = Save(&userRole)
-	err = db.GetDB().Omit("Hobbies", "Languages", "Lunch", "Buddies", "Blacklist", "Likes", "Areas").Save(&user).Error
+	/*	var userRole models.UserRole
+		_, err := First(models.UserRole{UserID: user.ID}, &userRole, []string{})
+		//userRole.RoleName = user.Role.RoleName
+		err = Save(&userRole)*/
+	err := db.GetDB().Omit("Hobbies", "Languages", "Lunch", "Buddies", "Blacklist", "Likes", "Areas").Save(&user).Error
 	//user.Role = userRole
 	return err
 }
@@ -105,12 +106,12 @@ func (r *UserRepository) Update(user *models.User) error {
 // The role is deleted from the database
 // The user is deleted from the database
 func (r *UserRepository) Delete(user *models.User) error {
-	err := db.GetDB().Unscoped().Delete(models.UserRole{UserID: user.ID}).Error
-	err = db.GetDB().Unscoped().Delete(&user).Error
+	//err := db.GetDB().Unscoped().Delete(models.UserRole{UserID: user.ID}).Error
+	err := db.GetDB().Unscoped().Delete(&user).Error
 	return err
 }
 
-func (r *UserRepository) ChangeUserArea(user *models.User, area models.Area) error {
+func (r *UserRepository) ChangeUserArea(user *models.User, area *models.Area) error {
 	err := db.GetDB().Model(&user).Association("Areas").Replace(area)
 	return err
 }
@@ -158,4 +159,21 @@ func (r *UserRepository) AddUserLikes(user *models.User, likes []models.User) er
 func (r *UserRepository) RemoveUserLikes(user *models.User, likes []models.User) error {
 	err := db.GetDB().Model(&user).Association("Likes").Delete(likes)
 	return err
+}
+
+func (r *UserRepository) GetRandomFiveUsers() ([]models.User, error) {
+	var users []models.User
+	err := db.GetDB().Order(gorm.Expr("random()")).Limit(5).Find(&users).Error
+	return users, err
+}
+
+func (r *UserRepository) GetRandomFiveUsersThatShareAtLeastOneAreaAndAtLeastOneHobbyAndAtLeastOneLanguageAndHaveSameLunchTime(user *models.User) ([]models.User, error) {
+	var users []models.User
+	err := db.GetDB().Where("id != ?", user.ID).Where("id NOT IN (?)", user.Blacklist).Where("id NOT IN (?)", user.Buddies).Where("id NOT IN (?)", user.Likes).Where("id IN (?)", user.Areas).Where("id IN (?)", user.Hobbies).Where("id IN (?)", user.Languages).Order(gorm.Expr("random()")).Limit(5).Find(&users).Error
+	return users, err
+}
+func (r *UserRepository) GetRandomFiveUsersWithAssociation() ([]models.User, error) {
+	var users []models.User
+	err := db.GetDB().Preload("Hobbies").Preload("Languages").Preload("Lunch").Preload("Buddies").Preload("Blacklist").Preload("Likes").Preload("Areas").Order(gorm.Expr("random()")).Limit(5).Find(&users).Error
+	return users, err
 }

@@ -71,11 +71,6 @@ func migration() {
 	if err != nil {
 		return
 	}
-	err = DB.AutoMigrate(&users.UserRole{})
-	if err != nil {
-
-		return
-	}
 	err = DB.AutoMigrate(&tasks.Task{})
 	if err != nil {
 		return

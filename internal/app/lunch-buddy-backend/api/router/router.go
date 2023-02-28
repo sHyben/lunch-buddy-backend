@@ -57,6 +57,7 @@ func Setup() *gin.Engine {
 	app.POST("/api/users/:id/information", controllers.AddUserInformation)
 
 	app.GET("/api/users/card/:name", controllers.GetUserCard)
+	app.GET("/api/users/card", controllers.GetUsersForDashboard)
 
 	// ================== Hobby Routes
 	app.GET("/api/hobbies", controllers.GetHobbies)
