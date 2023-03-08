@@ -126,7 +126,7 @@ func (r *UserRepository) ChangeUserLanguages(user *models.User, languages []mode
 	return err
 }
 
-func (r *UserRepository) ChangeUserLunch(user *models.User, lunch models.Lunch) error {
+func (r *UserRepository) ChangeUserLunch(user *models.User, lunch *models.Lunch) error {
 	err := db.GetDB().Model(&user).Association("Lunch").Replace(lunch)
 	return err
 }
@@ -176,4 +176,10 @@ func (r *UserRepository) GetRandomFiveUsersWithAssociation() ([]models.User, err
 	var users []models.User
 	err := db.GetDB().Preload("Hobbies").Preload("Languages").Preload("Lunch").Preload("Buddies").Preload("Blacklist").Preload("Likes").Preload("Areas").Order(gorm.Expr("random()")).Limit(5).Find(&users).Error
 	return users, err
+}
+
+func (r *UserRepository) GetUserLunch(user *models.User) (*models.Lunch, error) {
+	var lunch models.Lunch
+	err := db.GetDB().Model(&user).Association("Lunch").Error
+	return &lunch, err
 }

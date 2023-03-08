@@ -253,7 +253,7 @@ func AddUserAreas(c *gin.Context, userInformation UserInformation, user *models.
 }
 
 func AddUserLunch(c *gin.Context, userInformation UserInformation, user *models.User) {
-	//u := persistence.GetUserRepository()
+	u := persistence.GetUserRepository()
 	l := persistence.GetLunchRepository()
 
 	if userInformation.LunchLocation != "" && userInformation.LunchTime != "" && userInformation.LunchType != "" && userInformation.LunchFood != "" {
@@ -265,14 +265,27 @@ func AddUserLunch(c *gin.Context, userInformation UserInformation, user *models.
 			http_err.NewError(c, http.StatusBadRequest, err)
 			log.Println(err)
 		} else {
+			lunch, _ := u.GetUserLunch(user)
+			if lunch != nil && !lunch.Time.IsZero() {
+				fmt.Println("TEST Lunch found, updating")
+			} else {
+				fmt.Println("TEST Lunch not found, creating new one")
+
+			}
+			fmt.Println("User lunch: ", lunch)
 			fmt.Println("Lunch time parsed: ", lunchTime)
-			if existingLunch, err := l.Get(user.Lunch.ID.String()); err != nil {
+			fmt.Println("User email: ", user.Username)
+			//if existingLunch, err := l.Get(user.Lunch.ID.String()); err != nil || existingLunch.Time.IsZero() {
+			if existingLunch, err := u.GetUserLunch(user); err != nil || existingLunch.Time.IsZero() {
+				fmt.Println("Lunch not found, creating new one")
 				lunch := models.Lunch{Location: userInformation.LunchLocation, Time: lunchTime, Type: userInformation.LunchType, Food: userInformation.LunchFood, UserID: user.ID}
 				if err := l.Add(&lunch); err != nil {
 					http_err.NewError(c, http.StatusNotFound, err)
 					log.Println(err)
 				}
 			} else {
+				fmt.Println("Lunch found, updating")
+				fmt.Println("Lunch: ", existingLunch)
 				existingLunch.Location = userInformation.LunchLocation
 				existingLunch.Time = lunchTime
 				existingLunch.Type = userInformation.LunchType

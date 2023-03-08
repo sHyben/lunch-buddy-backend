@@ -10,7 +10,7 @@ import (
 // Lunch represents a lunch
 type Lunch struct {
 	models.Model
-	UserID   uuid.UUID
+	UserID   uuid.UUID `gorm:"column:user_id;not null;" json:"user_id"`
 	Location string    `gorm:"column:location;not null;" json:"location"`
 	Time     time.Time `gorm:"column:time;" json:"time"` //not null;
 	Type     string    `gorm:"column:type;not null;" json:"type"`
